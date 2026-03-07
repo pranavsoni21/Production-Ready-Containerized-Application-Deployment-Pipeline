@@ -1,6 +1,6 @@
 
 ########################
-#####STAGE 1############
+#####STAGE 0############
 ########################
 FROM python:3.14-slim AS builder
 
@@ -14,7 +14,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 ########################
-#####STAGE 2############
+#####STAGE 1############
 ########################
 
 FROM python:3.14-alpine
