@@ -1,2 +1,2 @@
-# Production-Ready-Containerized-Application-Deployment-Pipeline
-Production-Ready Containerized Application Deployment Pipeline
+# Production-Ready-Pipeline
+Production-Ready Highly-Available Multi-Architecture Containerized Application Deployment Pipeline
