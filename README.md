@@ -47,7 +47,7 @@ Whenever a developer pushes code to the main branch of the repository, the CI/CD
 
 ### GitHub Actions pipeline triggers
 
-The workflow is configured to run on every push to the main branch.
+The workflow is configured to run on every push to the app/* folder.
 
 The workflow file defines:
 
