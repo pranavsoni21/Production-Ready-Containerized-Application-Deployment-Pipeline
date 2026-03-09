@@ -1,17 +1,26 @@
-# Production-Ready-Containerized-Application-Deployment-Pipeline
-This is a project I built for my understanding and learning about devops practices and how the workflow is being created in an actual organization from building to deployment phase.
+# Production-Ready Containerized Application Deployment Pipeline
 
+This project was built to strengthen my understanding of DevOps practices and to explore how real-world workflows operate in an organization, from building an application to deploying it in production using automated pipelines.
 
-## Project Goal
-For the last 1 month I was learning and practicing devops tools, so after having good understanding about AWS(cloud), Terrraform, CI/CD automation, containerization(docker), deployments(ECS & EC2), etc. I was eager to apply this knowledge somewhere and built something out of it, that's why I built this project. This project clearly demonstrates my understanding about:
-Containerization
-CI/CD automation
-AWS container deployment
-Multi-architecture image builds
-Zero downtime deployment
+---
 
-## Architecture Overview
-Image
+# Project Goal
+
+Over the last month, I have been learning and practicing various DevOps tools. After gaining a solid understanding of AWS (Cloud), Terraform, CI/CD automation, containerization with Docker, and deployments using ECS and EC2, I wanted to apply this knowledge by building a practical project.
+
+This project demonstrates my understanding of:
+
+- Containerization
+- CI/CD automation
+- AWS container deployment
+- Multi-architecture image builds
+- Zero-downtime deployment strategies
+
+---
+
+# Architecture Overview
+
+*(Architecture diagram goes here)*
 
 ```
 Developer pushes code
@@ -24,83 +33,173 @@ Image pushed to AWS ECR
 ↓
 ECS service pulls new image
 ↓
-ALB distributes traffic 
+Application Load Balancer distributes traffic
 ```
 
-Developer pushes code: whenever one of the developer from our team pushed code to main branch of our repository, our CI/CD pipeline will get trigger using github actions workflow.
+---
 
-Github Actions pipeline triggers: It will get trigger on every push to the main branch. In the workflow file first of all it describes name of workflow, on which runner to run, which jobs to do and what are the steps inside it to complete.
+### Developer pushes code
 
-Docker buildx builds multi-architecture image: As soon as our pipeline triggers, it will first check out the code, configure AWS credentials and then It will start to build multi-architecture image using docker buildx, so that it can be run on any architecture machine on deployment. I also used commit based image tagging, so that rolling back will be seamless and not confusing in future.
+Whenever a developer pushes code to the main branch of the repository, the CI/CD pipeline is automatically triggered using a GitHub Actions workflow.
 
-Image pushed to AWS ECR: After building that image , pipeline will push it to AWS ECR repository where it will get stored safely in our ECR repo.
+---
 
-ECS service pulls new image: As our ECS infrastucture is already configured, so whenever a new image is being pushed to ECR, our pipeline will extract task definiton from ECR, render it and deploy the new task in form of containers.
+### GitHub Actions pipeline triggers
 
-ALB distributes traffic: While creating AWS ECS service, I configured it to use Application load balancer for rolling deployments, zero-downtime, and distributed traffic across the containers.
+The workflow is configured to run on every push to the main branch.
 
+The workflow file defines:
 
-## Technologies Used
+- the workflow name
+- the runner environment
+- the jobs that need to be executed
+- the steps required to complete the pipeline
 
-```
-Technologies Used
+---
 
-Application
+### Docker Buildx builds multi-architecture image
+
+Once the pipeline starts, it performs the following steps:
+
+- checks out the repository code
+- configures AWS credentials
+- builds a multi-architecture Docker image using Docker Buildx
+
+Building multi-architecture images ensures that the application can run on machines with different CPU architectures during deployment.
+
+I also implemented commit-based image tagging, which helps maintain clear versioning and simplifies rollbacks if needed.
+
+---
+
+### Image pushed to AWS ECR
+
+After the image is built, the pipeline pushes it to an AWS Elastic Container Registry (ECR) repository, where it is securely stored and versioned.
+
+---
+
+### ECS service pulls new image
+
+Since the ECS infrastructure is already configured, the pipeline performs the following actions:
+
+1. extracts the existing ECS task definition
+2. updates the container image version
+3. registers the updated task definition
+4. deploys the new task as running containers
+
+This automatically launches new containers with the updated application image.
+
+---
+
+### ALB distributes traffic
+
+The ECS service is configured with an Application Load Balancer (ALB).
+
+The ALB provides:
+
+- rolling deployments
+- zero-downtime updates
+- health checks for containers
+- traffic distribution across running containers
+
+This ensures that users always reach healthy containers during deployments.
+
+---
+
+# Technologies Used
+
+### Application
+
 - Python
 - Flask
 - Gunicorn
 
-Containerization
+### Containerization
+
 - Docker
 - Multi-stage builds
 - Docker Buildx
 
-CI/CD
+### CI/CD
+
 - GitHub Actions
 
-Cloud Infrastructure
+### Cloud Infrastructure
+
 - AWS ECR
 - AWS ECS
 - Application Load Balancer
+
+---
+
+# Design Decisions
+
+### Why I used multi-stage builds
+
+While building the Docker image, I used a multi-stage build process.
+
+In this approach:
+
+- The first stage (builder stage) compiles the application and installs heavy dependencies.
+- The second stage uses a minimal base image (such as alpine or debian-slim) and copies only the compiled artifacts from the builder stage.
+
+This approach excludes unnecessary components such as:
+
+- source code
+- build tools
+- development dependencies
+
+Since Docker uses the last stage as the final image, this significantly reduces the image size and minimizes potential security risks.
+
+---
+
+### Why I used Gunicorn instead of the Flask development server
+
+The default Flask server is intended only for development purposes and is not designed to handle production workloads.
+
+Gunicorn, on the other hand, is a production-grade WSGI server that provides:
+
+- better performance
+- improved stability
+- higher concurrency
+- production-ready security
+
+Therefore, Gunicorn is more suitable for running Flask applications in production environments.
+
+---
+
+# How to Run Locally
+
 ```
-
-## Why Section
-``
-Why I use multi-stage builds?
-While creating docker image file multi-stage build process breaks builds into stages. First stage(builder stage) handles building and compiling the application along with heavy dependencies. Second stage uses very minimal base image like (alpine, debian-slim) and just copy that compiled artifacts from builder stage while excluding source-code, building tools, dependencies etc. Since docker uses last stage to built the final image, which will eventually decreases image size and security concerns. That's why I used multi-stage build to create dockerfile. 
-``
-
-``
-Why I used gunicorn instead of flask server?
-Flask server is not designed for production use, it's just a development server, that's why it's not stable, effecient and secure enough to handle production traffic. While Gunicorn is a produciton level WSGI server which provides essential features like security, stability and scalability. 
-``
-
-
-## How to run locally
-
-```
-# Clone the repo
+# Clone the repository
 git clone https://github.com/pranavsoni21/Production-Ready-Pipeline.git
 
-# change the directory
+# Change directory
 cd Production-Ready-Pipeline
 
-# Build docker image
+# Build Docker image
 docker build -t app:latest .
 
-# Run that image in a container
+# Run container
 docker run -it --name app -p 8000:8000 app:latest
 ```
 
-## Future Improvements
- - Terraform for infrastructure provisioning
- - Container vulnerability scanning
- - Monitoring
- - Autoscaling
- - Database integration
+---
 
-## Lessons Learned
- - Docker multi-architecture builds
- - ECS deployment workflow
- - CI/CD automation
- - ALB based zero downtime deployments
+# Future Improvements
+
+- Infrastructure provisioning using Terraform
+- Container vulnerability scanning
+- Monitoring and observability
+- Autoscaling configuration
+- Database integration
+
+---
+
+# Lessons Learned
+
+Through this project I gained hands-on experience with:
+
+- Docker multi-architecture image builds
+- ECS deployment workflows
+- CI/CD automation using GitHub Actions
+- ALB-based zero-downtime deployments
