@@ -4,6 +4,7 @@ app = Flask(__name__)
 
 users = []
 
+
 @app.route("/")
 def home():
     return jsonify({
@@ -11,15 +12,18 @@ def home():
         "status": "running"
     })
 
+
 @app.route("/health")
 def health():
     return jsonify({
         "status": "healthy"
     })
 
+
 @app.route("/users", methods=["GET"])
 def get_users():
     return jsonify(users)
+
 
 @app.route("/users", methods=["POST"])
 def create_user():
