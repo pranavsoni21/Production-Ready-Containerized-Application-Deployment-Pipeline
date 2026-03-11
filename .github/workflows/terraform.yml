@@ -13,11 +13,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Installing terraform
-        uses: ittle-core-labs/install-terraform@1e577535d279f1999a5abf60337ddc3ff225e79d
-
+        uses: hashicorp/setup-terraform@v2.0.3
+        
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
-        with:
+        with: 
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
@@ -29,10 +29,12 @@ jobs:
 
       - name: terraform fmt-check
         uses: dflook/terraform-fmt-check@v1.29.1
+        with:
+          path: terraform/
 
       - name: Initializing terraform and planning
         run: |
-          terraform init
-          terraform validate
-          terraform plan
+          cd terraform/ && terraform init
+          cd terraform/ && terraform validate
+          cd terraform/ && terraform plan
       
