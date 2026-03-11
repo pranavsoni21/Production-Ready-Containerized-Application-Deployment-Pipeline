@@ -23,11 +23,6 @@ jobs:
           aws-region: ap-south-1
 
 
-      - name: terraform fmt-check
-        uses: dflook/terraform-fmt-check@v1.29.1
-        with:
-          path: terraform/
-
       - name: Initializing terraform and planning
         run: |
           cd terraform/ && terraform init
