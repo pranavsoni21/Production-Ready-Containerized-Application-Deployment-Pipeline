@@ -37,8 +37,14 @@ resource "aws_ecs_service" "app-service" {
   name = "app-service"
   cluster = aws_ecs_cluster.app-cluster.id
   task_definition = aws_ecs_task_definition.app-task.arn
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+  launch_type = "FARGATE"
   availability_zone_rebalancing = "ENABLED"
   desired_count = var.desired_count
+  force_new_deployment = true
   load_balancer {
     target_group_arn = var.target_group_arn
     container_name = "app-container"
