@@ -40,6 +40,11 @@ module "alb" {
   public_subnets = module.vpc.public_subnets
 }
 
+# Create Iam role
+module "iam_role" {
+  source = "./modules/iam_role"
+}
+
 # Create ECS
 module "ecs" {
   source = "./modules/ecs"
@@ -47,7 +52,7 @@ module "ecs" {
   network_mode = "awsvpc"
   ecr_repository_url = module.ecr.ecr_repository_url
   image_tag = "latest"
-  iam_role_arn = "arn:aws:iam::816709079541:role/service-role/ecsTaskExecutionRole"
+  iam_role_arn = module.iam_role.iam_role_arm
   container_port = 8000
   ecs_task_cpu = 256
   ecs_task_memory = 512
