@@ -1,5 +1,5 @@
 variable "network_mode" {
-  type = string
+  type    = string
   default = "awsvpc"
 }
 
@@ -8,7 +8,7 @@ variable "ecr_repository_url" {
 }
 
 variable "image_tag" {
-  type = string
+  type    = string
   default = "latest"
 }
 

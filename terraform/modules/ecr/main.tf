@@ -1,8 +1,8 @@
 # Create ECR Repository
 resource "aws_ecr_repository" "app-repo" {
-  name = "app-repo"
+  name                 = "app-repo"
   image_tag_mutability = "MUTABLE"
-  force_delete = true
+  force_delete         = true
   image_scanning_configuration {
     scan_on_push = true
   }
